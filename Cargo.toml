@@ -1,0 +1,13 @@
+[package]
+name = "ephemeris"
+version = "0.1.0-alpha.0"
+description = "A sane date/time library for rust"
+repository = "https://github.com/ephemeris-rust/ephemeris"
+keywords = ["calendar", "date", "time"]
+categories = ["date-and-time"]
+license = "MIT"
+readme = "README.md"
+authors = ["Stephen A. Imhoff <clockwork-muse@outlook.com>"]
+edition = "2018"
+
+[dependencies]
