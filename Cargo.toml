@@ -13,5 +13,4 @@ edition = "2018"
 [dependencies]
 
 [dev-dependencies]
-proptest = "*"
-hamcrest = "*"
+proptest = "0.*"
