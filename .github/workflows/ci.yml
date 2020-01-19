@@ -30,4 +30,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish
-        run: cargo publish --allow-dirty
+        env:
+          CARGO_TOKEN: ${{ secrets.CARGO_TOKEN }}
+        run: cargo publish --token $CARGO_TOKEN --allow-dirty
