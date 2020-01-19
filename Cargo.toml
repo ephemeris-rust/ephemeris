@@ -1,6 +1,6 @@
 [package]
 name = "ephemeris"
-version = "0.1.0-alpha.1"
+version = "0.1.0-alpha.2"
 description = "A sane date/time library for rust"
 repository = "https://github.com/ephemeris-rust/ephemeris"
 keywords = ["calendar", "date", "time"]
