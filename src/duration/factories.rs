@@ -12,7 +12,7 @@ proptest! {
     #[test]
     fn of_days(days in (Duration::MIN.seconds() / SECONDS_IN_DAY)-1..(Duration::MAX.seconds() / SECONDS_IN_DAY)) {
         let duration = Duration::of_days(days + 1);
-        prop_assert_eq!(0, duration.nanos());
+        prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((days + 1) * SECONDS_IN_DAY, duration.seconds());
     }
 }
@@ -35,7 +35,7 @@ proptest! {
     #[test]
     fn of_hours(hours in (i64::min_value() / SECONDS_IN_HOUR)-1..(i64::max_value() / SECONDS_IN_HOUR)) {
         let duration = Duration::of_hours(hours + 1);
-        prop_assert_eq!(0, duration.nanos());
+        prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((hours + 1) * SECONDS_IN_HOUR, duration.seconds());
     }
 }
@@ -58,7 +58,7 @@ proptest! {
     #[test]
     fn of_minutes(minutes in (i64::min_value() / SECONDS_IN_MINUTE)-1..(i64::max_value() / SECONDS_IN_MINUTE)) {
         let duration = Duration::of_minutes(minutes + 1);
-        prop_assert_eq!(0, duration.nanos());
+        prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((minutes + 1) * SECONDS_IN_MINUTE, duration.seconds());
     }
 }
@@ -122,7 +122,7 @@ proptest! {
             (seconds + adjustment / NANOSECONDS_IN_SECOND - 1, adjustment % NANOSECONDS_IN_SECOND + NANOSECONDS_IN_SECOND)
         };
 
-        prop_assert_eq!(expected_nanos as u32, duration.nanos());
+        prop_assert_eq!(expected_nanos as u32, duration.nano());
         prop_assert_eq!(expected_seconds, duration.seconds());
     }
 }
@@ -164,7 +164,7 @@ proptest! {
     fn of_seconds(seconds in prop::num::i64::ANY) {
         let duration = Duration::of_seconds(seconds);
 
-        prop_assert_eq!(0, duration.nanos());
+        prop_assert_eq!(0, duration.nano());
         prop_assert_eq!(seconds, duration.seconds());
     }
 }
@@ -182,7 +182,7 @@ proptest! {
             (millis / MILLISECONDS_IN_SECOND - 1, millis % MILLISECONDS_IN_SECOND * NANOSECONDS_IN_MILLISECOND + NANOSECONDS_IN_SECOND)
         };
 
-        prop_assert_eq!(nanos as u32, duration.nanos());
+        prop_assert_eq!(nanos as u32, duration.nano());
         prop_assert_eq!(seconds, duration.seconds());
     }
 }
@@ -200,7 +200,7 @@ proptest! {
             (nanos / NANOSECONDS_IN_SECOND - 1, nanos % NANOSECONDS_IN_SECOND + NANOSECONDS_IN_SECOND)
         };
 
-        prop_assert_eq!(expected_nanos as u32, duration.nanos());
+        prop_assert_eq!(expected_nanos as u32, duration.nano());
         prop_assert_eq!(seconds, duration.seconds());
     }
 }
