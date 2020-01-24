@@ -119,7 +119,7 @@ impl Duration {
     ///
     /// # Parameters
     ///  - `seconds`: the seconds in the duration.
-    pub fn of_seconds(seconds: i64) -> Duration {
+    pub const fn of_seconds(seconds: i64) -> Duration {
         Duration {
             seconds: seconds,
             nanoseconds_of_second: 0,

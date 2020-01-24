@@ -58,8 +58,11 @@ impl Instant {
     ///
     /// # Parameters
     ///  - `epoch_seconds`: the seconds in the duration.
-    pub fn of_epoch_second(epoch_seconds: i64) -> Instant {
-        Instant::of_epoch_second_and_adjustment(epoch_seconds, 0)
+    pub const fn of_epoch_second(epoch_seconds: i64) -> Instant {
+        Instant {
+            epoch_second: epoch_seconds,
+            nanosecond_of_second: 0,
+        }
     }
 
     /// Obtains an Instant using seconds and an adjustment in nanoseconds since '1970-01-01 00:00:00.000000000Z'.
