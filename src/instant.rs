@@ -88,14 +88,14 @@ impl Instant {
     /// Gets the number of seconds before or after the epoch.
     ///
     /// [`nanos()`]: struct.Instant.html#method.nanos
-    pub fn epoch_second(&self) -> i64 {
+    pub const fn epoch_second(&self) -> i64 {
         self.epoch_second
     }
 
     /// Gets the number of nanoseconds farther along the timeline in this instant.
     ///
     /// [`epoch_seconds()`]: struct.Instant.html#method.epoch_seconds
-    pub fn nano(&self) -> u32 {
+    pub const fn nano(&self) -> u32 {
         self.nanosecond_of_second
     }
 }
