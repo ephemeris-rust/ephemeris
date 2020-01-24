@@ -43,21 +43,26 @@ impl Instant {
     /// # Parameters
     ///  - `epoch_milliseconds`: the milliseconds since the epoch.
     pub fn of_epoch_milli(epoch_milliseconds: i64) -> Instant {
-        let (seconds, remainder) = (
-            epoch_milliseconds / MILLISECONDS_IN_SECOND,
-            epoch_milliseconds % MILLISECONDS_IN_SECOND,
-        );
-        let nanoseconds = remainder * NANOSECONDS_IN_MILLISECOND;
-        Instant::of_epoch_second_and_adjustment_checked(seconds, nanoseconds)
-            .expect("milliseconds would overflow instant")
+        let seconds = epoch_milliseconds / MILLISECONDS_IN_SECOND;
+        let adjustment = (epoch_milliseconds % MILLISECONDS_IN_SECOND) * NANOSECONDS_IN_MILLISECOND;
+
+        let (second_adjustment, nanos) = carry_and_nanos(adjustment);
+
+        Instant {
+            epoch_second: seconds + second_adjustment,
+            nanosecond_of_second: nanos,
+        }
     }
 
     /// Obtains an Instant using seconds since '1970-01-01 00:00:00Z'.
     ///
     /// # Parameters
     ///  - `epoch_seconds`: the seconds in the duration.
-    pub fn of_epoch_second(epoch_seconds: i64) -> Instant {
-        Instant::of_epoch_second_and_adjustment(epoch_seconds, 0)
+    pub const fn of_epoch_second(epoch_seconds: i64) -> Instant {
+        Instant {
+            epoch_second: epoch_seconds,
+            nanosecond_of_second: 0,
+        }
     }
 
     /// Obtains an Instant using seconds and an adjustment in nanoseconds since '1970-01-01 00:00:00.000000000Z'.
@@ -67,10 +72,10 @@ impl Instant {
     ///  - `nano_adjustment`: the adjustment amount from the given second.
     ///
     /// # Panics
-    /// - if the adjusted amount of seconds would be before the minimum instant, or after the maximum instant.
+    /// - if the adjusted amount of seconds would overflow the instant.
     pub fn of_epoch_second_and_adjustment(epoch_seconds: i64, nano_adjustment: i64) -> Instant {
         Instant::of_epoch_second_and_adjustment_checked(epoch_seconds, nano_adjustment)
-            .expect("seconds would overflow instant")
+            .expect("nano adjustment would overflow instant")
     }
 
     fn of_epoch_second_and_adjustment_checked(
@@ -88,14 +93,14 @@ impl Instant {
     /// Gets the number of seconds before or after the epoch.
     ///
     /// [`nanos()`]: struct.Instant.html#method.nanos
-    pub fn epoch_second(&self) -> i64 {
+    pub const fn epoch_second(&self) -> i64 {
         self.epoch_second
     }
 
     /// Gets the number of nanoseconds farther along the timeline in this instant.
     ///
     /// [`epoch_seconds()`]: struct.Instant.html#method.epoch_seconds
-    pub fn nano(&self) -> u32 {
+    pub const fn nano(&self) -> u32 {
         self.nanosecond_of_second
     }
 }

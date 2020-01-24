@@ -119,7 +119,7 @@ impl Duration {
     ///
     /// # Parameters
     ///  - `seconds`: the seconds in the duration.
-    pub fn of_seconds(seconds: i64) -> Duration {
+    pub const fn of_seconds(seconds: i64) -> Duration {
         Duration {
             seconds: seconds,
             nanoseconds_of_second: 0,
@@ -161,13 +161,13 @@ impl Duration {
     /// Gets the number of nanoseconds within the second in this duration.
     ///
     /// [`seconds()`]: struct.Duration.html#method.seconds
-    pub const fn nanos(&self) -> u32 {
+    pub const fn nano(&self) -> u32 {
         self.nanoseconds_of_second
     }
 
     /// Gets the number of seconds in this duration.
     ///
-    /// [`nanos()`]: struct.Duration.html#method.nanos
+    /// [`nano()`]: struct.Duration.html#method.nano
     pub const fn seconds(&self) -> i64 {
         self.seconds
     }

@@ -6,6 +6,13 @@ use crate::constants::*;
 
 use crate::Instant;
 
+use crate::assert::expect_panic;
+
+const INSTANT_SAFE_UPPER_BOUND: i64 =
+    Instant::MAX.epoch_second() - i64::MAX / NANOSECONDS_IN_SECOND + 0;
+const INSTANT_SAFE_LOWER_BOUND: i64 =
+    Instant::MIN.epoch_second() - i64::MIN / NANOSECONDS_IN_SECOND + 1;
+
 proptest! {
     #[test]
     fn of_second(seconds in prop::num::i64::ANY) {
@@ -20,16 +27,13 @@ prop_compose! {
     fn seconds_and_bounds()
         (seconds in prop::num::i64::ANY) -> (i64, i64, i64)
         {
-            let upper_bound = Instant::MAX.epoch_second() - i64::MAX / NANOSECONDS_IN_SECOND;
-            let lower_bound = Instant::MIN.epoch_second() - i64::MIN / NANOSECONDS_IN_SECOND + 1;
-
-            let upper = if seconds >= upper_bound {
+            let upper = if seconds >= INSTANT_SAFE_UPPER_BOUND {
                 (Instant::MAX.epoch_second() - seconds + 1) * NANOSECONDS_IN_SECOND - 1
             } else {
                 i64::MAX
             };
 
-            let lower = if seconds < lower_bound {
+            let lower = if seconds < INSTANT_SAFE_LOWER_BOUND {
                 (Instant::MIN.epoch_second() - seconds) * NANOSECONDS_IN_SECOND
             } else {
                 i64::MIN
@@ -74,19 +78,35 @@ proptest! {
     }
 }
 
-proptest! {
-    #[test]
-    #[should_panic(expected = "seconds would overflow instant")]
-    fn of_epoch_second_and_adjustment_overflow(seconds in Just(i64::MAX), nanoseconds in Just(NANOSECONDS_IN_SECOND + 1)) {
-        let _instant = Instant::of_epoch_second_and_adjustment(seconds, nanoseconds);
-    }
+prop_compose! {
+    fn adjustment_overflow()
+        (seconds in INSTANT_SAFE_UPPER_BOUND + 1..=Instant::MAX.epoch_second())
+            (seconds in Just(seconds), adjustment in (Instant::MAX.epoch_second() - seconds + 1) * NANOSECONDS_IN_SECOND..=i64::MAX)-> (i64, i64)
+            {
+                (seconds, adjustment)
+            }
 }
 
 proptest! {
     #[test]
-    #[should_panic(expected = "seconds would overflow instant")]
-    fn of_epoch_second_and_adjustment_underflow(seconds in Just(i64::MIN), nanoseconds in Just(-1)) {
-        let _instant = Instant::of_epoch_second_and_adjustment(seconds, nanoseconds);
+    fn of_epoch_second_and_adjustment_overflow((seconds, nanoseconds) in adjustment_overflow()) {
+        expect_panic("nano adjustment would overflow instant", || Instant::of_epoch_second_and_adjustment(seconds, nanoseconds))?;
+    }
+}
+
+prop_compose! {
+    fn adjustment_underflow()
+        (seconds in Instant::MIN.epoch_second()..INSTANT_SAFE_LOWER_BOUND)
+            (seconds in Just(seconds), adjustment in i64::MIN..=(i64::MIN - seconds - 1) * NANOSECONDS_IN_SECOND)-> (i64, i64)
+            {
+                (seconds, adjustment)
+            }
+}
+
+proptest! {
+    #[test]
+    fn of_epoch_second_and_adjustment_underflow((seconds, nanoseconds) in adjustment_underflow()) {
+        expect_panic("nano adjustment would overflow instant", || Instant::of_epoch_second_and_adjustment(seconds, nanoseconds))?;
     }
 }
 
