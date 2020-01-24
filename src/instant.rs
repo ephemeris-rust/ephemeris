@@ -72,10 +72,10 @@ impl Instant {
     ///  - `nano_adjustment`: the adjustment amount from the given second.
     ///
     /// # Panics
-    /// - if the adjusted amount of seconds would be before the minimum instant, or after the maximum instant.
+    /// - if the adjusted amount of seconds would overflow the instant.
     pub fn of_epoch_second_and_adjustment(epoch_seconds: i64, nano_adjustment: i64) -> Instant {
         Instant::of_epoch_second_and_adjustment_checked(epoch_seconds, nano_adjustment)
-            .expect("seconds would overflow instant")
+            .expect("nano adjustment would overflow instant")
     }
 
     fn of_epoch_second_and_adjustment_checked(

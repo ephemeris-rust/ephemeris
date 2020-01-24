@@ -90,7 +90,7 @@ prop_compose! {
 proptest! {
     #[test]
     fn of_epoch_second_and_adjustment_overflow((seconds, nanoseconds) in adjustment_overflow()) {
-        expect_panic("seconds would overflow instant", || Instant::of_epoch_second_and_adjustment(seconds, nanoseconds))?;
+        expect_panic("nano adjustment would overflow instant", || Instant::of_epoch_second_and_adjustment(seconds, nanoseconds))?;
     }
 }
 
@@ -106,7 +106,7 @@ prop_compose! {
 proptest! {
     #[test]
     fn of_epoch_second_and_adjustment_underflow((seconds, nanoseconds) in adjustment_underflow()) {
-        expect_panic("seconds would overflow instant", || Instant::of_epoch_second_and_adjustment(seconds, nanoseconds))?;
+        expect_panic("nano adjustment would overflow instant", || Instant::of_epoch_second_and_adjustment(seconds, nanoseconds))?;
     }
 }
 
