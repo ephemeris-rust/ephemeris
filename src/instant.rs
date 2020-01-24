@@ -43,13 +43,15 @@ impl Instant {
     /// # Parameters
     ///  - `epoch_milliseconds`: the milliseconds since the epoch.
     pub fn of_epoch_milli(epoch_milliseconds: i64) -> Instant {
-        let (seconds, remainder) = (
-            epoch_milliseconds / MILLISECONDS_IN_SECOND,
-            epoch_milliseconds % MILLISECONDS_IN_SECOND,
-        );
-        let nanoseconds = remainder * NANOSECONDS_IN_MILLISECOND;
-        Instant::of_epoch_second_and_adjustment_checked(seconds, nanoseconds)
-            .expect("milliseconds would overflow instant")
+        let seconds = epoch_milliseconds / MILLISECONDS_IN_SECOND;
+        let adjustment = (epoch_milliseconds % MILLISECONDS_IN_SECOND) * NANOSECONDS_IN_MILLISECOND;
+
+        let (second_adjustment, nanos) = carry_and_nanos(adjustment);
+
+        Instant {
+            epoch_second: seconds + second_adjustment,
+            nanosecond_of_second: nanos,
+        }
     }
 
     /// Obtains an Instant using seconds since '1970-01-01 00:00:00Z'.
