@@ -1,6 +1,8 @@
 use std::i64;
 use std::u32;
 
+use std::ops::Neg;
+
 use crate::constants::*;
 use crate::seconds_nanos::*;
 use crate::util::const_expect;
@@ -9,6 +11,10 @@ use crate::util::const_expect;
 pub mod constants;
 #[cfg(test)]
 pub mod factories;
+#[cfg(test)]
+pub mod neg;
+#[cfg(test)]
+pub mod test_util;
 
 /// A time-based amount of time, such as '34.5 seconds'.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -195,5 +201,37 @@ impl Duration {
     /// [`nano()`]: struct.Duration.html#method.nano
     pub const fn seconds(&self) -> i64 {
         self.seconds
+    }
+}
+
+impl Neg for Duration {
+    type Output = Duration;
+
+    /// Returns a copy of this duration with the length negated.
+    ///
+    /// This method swaps the sign of the total length of this duration.
+    /// For example, `PT1.3S` will be returned as `PT-1.3S`.
+    ///
+    /// # Panics
+    ///  - if swapping the sign would cause the duration to overflow.
+    fn neg(self) -> Duration {
+        checked_neg(self).expect("negated value would overflow duration")
+    }
+}
+
+fn checked_neg(duration: Duration) -> Option<Duration> {
+    match (duration.seconds(), duration.nano()) {
+        (i64::MIN, 0) => None,
+        (i64::MIN, nanos) => Some(Duration {
+            seconds: i64::max_value(),
+            nanoseconds_of_second: NANOSECONDS_IN_SECOND as u32 - nanos,
+        }),
+        (seconds, nanos) => {
+            let (adjustment, flipped_nanos) = carry_and_nanos(-(nanos as i64));
+            Some(Duration {
+                seconds: -seconds + adjustment,
+                nanoseconds_of_second: flipped_nanos,
+            })
+        }
     }
 }
