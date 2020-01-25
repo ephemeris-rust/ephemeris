@@ -6,6 +6,8 @@ use crate::seconds_nanos::*;
 use crate::util::const_expect;
 
 #[cfg(test)]
+pub mod constants;
+#[cfg(test)]
 pub mod factories;
 
 /// A time-based amount of time, such as '34.5 seconds'.
