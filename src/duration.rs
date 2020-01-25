@@ -8,6 +8,8 @@ use crate::seconds_nanos::*;
 use crate::util::const_expect;
 
 #[cfg(test)]
+pub mod abs;
+#[cfg(test)]
 pub mod constants;
 #[cfg(test)]
 pub mod factories;
@@ -201,6 +203,21 @@ impl Duration {
     /// [`nano()`]: struct.Duration.html#method.nano
     pub const fn seconds(&self) -> i64 {
         self.seconds
+    }
+
+    /// Returns a new duration with a positive length and matching amplitude.
+    ///
+    /// This method returns a positive duration by effectively removing the sign from any negative total length.
+    /// For example, `PT-1.3S` will be returned as `PT1.3S`.
+    ///
+    /// # Panics
+    /// - if the duration would overflow after removing the negative sign.
+    pub fn abs(self) -> Duration {
+        if self >= Duration::ZERO {
+            self
+        } else {
+            checked_neg(self).expect("absolute value would overflow duration")
+        }
     }
 }
 
