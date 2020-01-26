@@ -15,62 +15,46 @@ proptest! {
         prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((days) * SECONDS_IN_DAY, duration.seconds());
     }
-}
 
-proptest! {
     #[test]
     fn of_days_overflow(days in Duration::MAX.seconds() / SECONDS_IN_DAY + 1..=i64::MAX) {
         expect_panic("days would overflow duration", || Duration::of_days(days))?;
     }
-}
 
-proptest! {
     #[test]
     fn of_days_underflow(days in i64::MIN..Duration::MIN.seconds() / SECONDS_IN_DAY) {
         expect_panic("days would overflow duration", || Duration::of_days(days))?;
     }
-}
 
-proptest! {
     #[test]
     fn of_hours(hours in (i64::min_value() / SECONDS_IN_HOUR)..=(i64::max_value() / SECONDS_IN_HOUR)) {
         let duration = Duration::of_hours(hours);
         prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((hours) * SECONDS_IN_HOUR, duration.seconds());
     }
-}
 
-proptest! {
     #[test]
     fn of_hours_overflow(hours in Duration::MAX.seconds() / SECONDS_IN_HOUR + 1..=i64::MAX) {
         expect_panic("hours would overflow duration", || Duration::of_hours(hours))?;
     }
-}
 
-proptest! {
     #[test]
     fn of_hours_underflow(hours in i64::MIN..Duration::MIN.seconds() / SECONDS_IN_HOUR) {
         expect_panic("hours would overflow duration", || Duration::of_hours(hours))?;
     }
-}
 
-proptest! {
     #[test]
     fn of_minutes(minutes in (i64::min_value() / SECONDS_IN_MINUTE)..=(i64::max_value() / SECONDS_IN_MINUTE)) {
         let duration = Duration::of_minutes(minutes);
         prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((minutes) * SECONDS_IN_MINUTE, duration.seconds());
     }
-}
 
-proptest! {
     #[test]
     fn of_minutes_overflow(minutes in Duration::MAX.seconds() / SECONDS_IN_MINUTE + 1..=i64::MAX) {
         expect_panic("minutes would overflow duration", || Duration::of_minutes(minutes))?;
     }
-}
 
-proptest! {
     #[test]
     fn of_minutes_underflow(minutes in i64::MIN..Duration::MIN.seconds() / SECONDS_IN_MINUTE) {
         expect_panic("minutes would overflow duration", || Duration::of_minutes(minutes))?;
@@ -156,9 +140,7 @@ proptest! {
     fn of_seconds_and_adjustment_underflow((seconds, nanoseconds) in adjustment_underflow()) {
         expect_panic("nano adjustment would overflow duration", || Duration::of_seconds_and_adjustment(seconds, nanoseconds))?;
     }
-}
 
-proptest! {
     #[test]
     fn of_seconds(seconds in prop::num::i64::ANY) {
         let duration = Duration::of_seconds(seconds);
@@ -166,9 +148,7 @@ proptest! {
         prop_assert_eq!(0, duration.nano());
         prop_assert_eq!(seconds, duration.seconds());
     }
-}
 
-proptest! {
     #[test]
     fn of_millis(millis in prop::num::i64::ANY) {
         let duration = Duration::of_millis(millis);
@@ -184,9 +164,7 @@ proptest! {
         prop_assert_eq!(nanos as u32, duration.nano());
         prop_assert_eq!(seconds, duration.seconds());
     }
-}
 
-proptest! {
     #[test]
     fn of_nanos(nanos in prop::num::i64::ANY) {
         let duration = Duration::of_nanos(nanos);
