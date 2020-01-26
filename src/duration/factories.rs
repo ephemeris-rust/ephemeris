@@ -10,10 +10,10 @@ use crate::assert::expect_panic;
 
 proptest! {
     #[test]
-    fn of_days(days in (Duration::MIN.seconds() / SECONDS_IN_DAY)-1..(Duration::MAX.seconds() / SECONDS_IN_DAY)) {
-        let duration = Duration::of_days(days + 1);
+    fn of_days(days in (Duration::MIN.seconds() / SECONDS_IN_DAY)..=(Duration::MAX.seconds() / SECONDS_IN_DAY)) {
+        let duration = Duration::of_days(days);
         prop_assert_eq!(0, duration.nano());
-        prop_assert_eq!((days + 1) * SECONDS_IN_DAY, duration.seconds());
+        prop_assert_eq!((days) * SECONDS_IN_DAY, duration.seconds());
     }
 }
 
@@ -33,10 +33,10 @@ proptest! {
 
 proptest! {
     #[test]
-    fn of_hours(hours in (i64::min_value() / SECONDS_IN_HOUR)-1..(i64::max_value() / SECONDS_IN_HOUR)) {
-        let duration = Duration::of_hours(hours + 1);
+    fn of_hours(hours in (i64::min_value() / SECONDS_IN_HOUR)..=(i64::max_value() / SECONDS_IN_HOUR)) {
+        let duration = Duration::of_hours(hours);
         prop_assert_eq!(0, duration.nano());
-        prop_assert_eq!((hours + 1) * SECONDS_IN_HOUR, duration.seconds());
+        prop_assert_eq!((hours) * SECONDS_IN_HOUR, duration.seconds());
     }
 }
 
@@ -56,10 +56,10 @@ proptest! {
 
 proptest! {
     #[test]
-    fn of_minutes(minutes in (i64::min_value() / SECONDS_IN_MINUTE)-1..(i64::max_value() / SECONDS_IN_MINUTE)) {
-        let duration = Duration::of_minutes(minutes + 1);
+    fn of_minutes(minutes in (i64::min_value() / SECONDS_IN_MINUTE)..=(i64::max_value() / SECONDS_IN_MINUTE)) {
+        let duration = Duration::of_minutes(minutes);
         prop_assert_eq!(0, duration.nano());
-        prop_assert_eq!((minutes + 1) * SECONDS_IN_MINUTE, duration.seconds());
+        prop_assert_eq!((minutes) * SECONDS_IN_MINUTE, duration.seconds());
     }
 }
 
