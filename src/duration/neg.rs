@@ -19,9 +19,7 @@ proptest! {
             prop_assert_ne!(duration < Duration::ZERO, negated < Duration::ZERO);
         }
     }
-}
 
-proptest! {
     #[test]
     fn neg_amplitude(duration in arb_duration().prop_filter("Duration cannot be minimum".to_owned(), |d| d != &Duration::MIN)) {
         let negated = -duration;
