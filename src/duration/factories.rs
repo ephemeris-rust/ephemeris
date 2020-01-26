@@ -65,30 +65,26 @@ const DURATION_SAFE_UPPER_BOUND: i64 = Duration::MAX.seconds() - i64::MAX / NANO
 const DURATION_SAFE_LOWER_BOUND: i64 =
     Duration::MIN.seconds() - i64::MIN / NANOSECONDS_IN_SECOND + 1;
 
-prop_compose! {
-    fn seconds_and_bounds()
-        (seconds in prop::num::i64::ANY) -> (i64, i64, i64)
-        {
-            let upper = if seconds >= DURATION_SAFE_UPPER_BOUND {
-                (Duration::MAX.seconds() - seconds + 1) * NANOSECONDS_IN_SECOND - 1
-            } else {
-                i64::MAX
-            };
+fn get_range(seconds: i64) -> std::ops::RangeInclusive<i64> {
+    let upper = if seconds >= DURATION_SAFE_UPPER_BOUND {
+        (Duration::MAX.seconds() - seconds + 1) * NANOSECONDS_IN_SECOND - 1
+    } else {
+        i64::MAX
+    };
 
-            let lower = if seconds < DURATION_SAFE_LOWER_BOUND {
-                (Duration::MIN.seconds() - seconds) * NANOSECONDS_IN_SECOND
-            } else {
-                i64::MIN
-            };
+    let lower = if seconds < DURATION_SAFE_LOWER_BOUND {
+        (Duration::MIN.seconds() - seconds) * NANOSECONDS_IN_SECOND
+    } else {
+        i64::MIN
+    };
 
-            (seconds, lower, upper)
-        }
+    lower..=upper
 }
 
 prop_compose! {
     fn seconds_and_adjustment()
-        ((seconds, lower, upper) in seconds_and_bounds())
-            (seconds in Just(seconds), adjustment in lower..=upper) -> (i64, i64)
+        (seconds in any::<i64>())
+            (seconds in Just(seconds), adjustment in get_range(seconds))-> (i64, i64)
             {
                 (seconds, adjustment)
             }
