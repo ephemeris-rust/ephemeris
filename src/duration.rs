@@ -17,6 +17,8 @@ pub mod factories;
 pub mod neg;
 #[cfg(test)]
 pub mod test_util;
+#[cfg(test)]
+pub mod to;
 
 /// A time-based amount of time, such as '34.5 seconds'.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -218,6 +220,56 @@ impl Duration {
         } else {
             checked_neg(self).expect("absolute value would overflow duration")
         }
+    }
+
+    /// The total number of days in the duration.
+    ///
+    /// This returns the total number of days in the duration by dividing the number of seconds by 86,400.
+    /// This is based on the standard definition of a day as 24 hours.
+    pub fn to_days(&self) -> i64 {
+        self.seconds() / SECONDS_IN_DAY
+    }
+
+    /// The total number of hours in the duration.
+    ///
+    /// This returns the total number of hours in the duration by dividing the number of seconds by 3,600.
+    /// This is based on the standard definition of an hour as 60 minutes.
+    pub fn to_hours(&self) -> i64 {
+        self.seconds() / SECONDS_IN_HOUR
+    }
+
+    /// The total number of minutes in the duration.
+    ///
+    /// This returns the total number of minutes in the duration by dividing the number of seconds by 60.
+    /// This is based on the standard definition of a minute as 60 seconds.
+    pub fn to_minutes(&self) -> i64 {
+        self.seconds() / SECONDS_IN_MINUTE
+    }
+
+    /// The total number of milliseconds in the duration.
+    ///
+    /// This returns the total number of milliseconds in the duration by multiplying the number of seconds by 1,000.
+    ///
+    /// # Panics
+    /// - if the amount of milliseconds would overflow an i64.
+    pub fn to_millis(&self) -> i64 {
+        self.seconds()
+            .checked_mul(MILLISECONDS_IN_SECOND)
+            .and_then(|result| result.checked_add(self.nano() as i64 / NANOSECONDS_IN_MILLISECOND))
+            .expect("total milliseconds would overflow")
+    }
+
+    /// The total number of nanoseconds in the duration.
+    ///
+    /// This returns the total number of nanoseconds in the duration by multiplying the number of seconds by 1,000,000,000.
+    ///
+    /// # Panics
+    /// - if the amount of nanoseconds would overflow an i64.
+    pub fn to_nanos(&self) -> i64 {
+        self.seconds()
+            .checked_mul(NANOSECONDS_IN_SECOND)
+            .and_then(|result| result.checked_add(self.nano() as i64))
+            .expect("total nanoseconds would overflow")
     }
 }
 
