@@ -1,3 +1,4 @@
+use std::fmt;
 use std::i64;
 use std::u32;
 
@@ -11,6 +12,8 @@ use crate::util::const_expect;
 pub mod abs;
 #[cfg(test)]
 pub mod constants;
+#[cfg(test)]
+pub mod display;
 #[cfg(test)]
 pub mod factories;
 #[cfg(test)]
@@ -270,6 +273,56 @@ impl Duration {
             .checked_mul(NANOSECONDS_IN_SECOND)
             .and_then(|result| result.checked_add(self.nano() as i64))
             .expect("total nanoseconds would overflow")
+    }
+}
+
+impl fmt::Display for Duration {
+    /// A string representation of this duration using ISO-8601 seconds based representation,
+    /// such as PT8H6M12.345S.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self == &Duration::ZERO {
+            return f.write_str("PT0S");
+        }
+
+        f.write_str("PT")?;
+
+        let (effective_seconds, directed_nanos) = if self.seconds() >= 0 || self.nano() == 0 {
+            (self.seconds(), self.nano())
+        } else {
+            (
+                self.seconds() + 1,
+                NANOSECONDS_IN_SECOND as u32 - self.nano(),
+            )
+        };
+
+        let hours = effective_seconds / SECONDS_IN_HOUR;
+        if hours != 0 {
+            hours.fmt(f)?;
+            f.write_str("H")?;
+        }
+
+        let minutes = (effective_seconds % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE;
+        if minutes != 0 {
+            minutes.fmt(f)?;
+            f.write_str("M")?;
+        }
+
+        let remaining_seconds = effective_seconds % SECONDS_IN_MINUTE;
+        if remaining_seconds != 0 || directed_nanos != 0 {
+            if remaining_seconds == 0 && effective_seconds < 0 {
+                f.write_str("-0")?;
+            } else {
+                remaining_seconds.fmt(f)?;
+            }
+
+            if directed_nanos != 0 {
+                let formatted = format!(".{:09}", directed_nanos);
+                f.write_str(formatted.as_str().trim_end_matches('0'))?;
+            }
+            f.write_str("S")?;
+        }
+
+        Ok(())
     }
 }
 
