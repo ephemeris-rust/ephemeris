@@ -19,6 +19,8 @@ pub mod factories;
 #[cfg(test)]
 pub mod neg;
 #[cfg(test)]
+pub mod plus_unit;
+#[cfg(test)]
 pub mod test_util;
 #[cfg(test)]
 pub mod to;
@@ -225,6 +227,161 @@ impl Duration {
         }
     }
 
+    /// Adds the specified number of days and returns the result as a new duration.
+    ///
+    /// The number of days is multiplied by 86,400 to obtain the number of seconds to add.
+    /// This is based on the standard definition of a day as 24 hours.
+    ///
+    /// # Parameters
+    ///  - `days`: the days to add, positive or negative.
+    ///
+    /// # Panics
+    /// - if the addition would overflow the result duration.
+    pub fn plus_days(self, days: i64) -> Duration {
+        self.plus_days_checked(days)
+            .expect("addition of days overflowed")
+    }
+
+    fn plus_days_checked(self, days: i64) -> Option<Duration> {
+        match (self, days) {
+            (_, 0) => Some(self),
+            (Duration::ZERO, _) => Duration::of_days_checked(days),
+            _ => days.checked_mul(SECONDS_IN_DAY).and_then(|total_seconds| {
+                plus_internal(self.seconds(), total_seconds, self.nano() as i64)
+            }),
+        }
+    }
+
+    /// Adds the specified number of hours and returns the result as a new duration.
+    ///
+    /// The number of hours is multiplied by 3,600 to obtain the number of seconds to add.
+    /// This is based on the standard definition of an hour as 60 minutes.
+    ///
+    /// # Parameters
+    ///  - `hours`: the hours to add, positive or negative.
+    ///
+    /// # Panics
+    /// - if the addition would overflow the result duration.
+    pub fn plus_hours(self, hours: i64) -> Duration {
+        self.plus_hours_checked(hours)
+            .expect("addition of hours overflowed")
+    }
+
+    fn plus_hours_checked(self, hours: i64) -> Option<Duration> {
+        match (self, hours) {
+            (_, 0) => Some(self),
+            (Duration::ZERO, _) => Duration::of_hours_checked(hours),
+            _ => hours
+                .checked_mul(SECONDS_IN_HOUR)
+                .and_then(|total_seconds| {
+                    plus_internal(self.seconds(), total_seconds, self.nano() as i64)
+                }),
+        }
+    }
+
+    /// Adds the specified number of minutes and returns the result as a new duration.
+    ///
+    /// The number of minutes is multiplied by 60 to obtain the number of seconds to add.
+    /// This is based on the standard definition of a minute as 60 seconds.
+    ///
+    /// # Parameters
+    ///  - `minutes`: the minutes to add, positive or negative.
+    ///
+    /// # Panics
+    /// - if the addition would overflow the result duration.
+    pub fn plus_minutes(self, minutes: i64) -> Duration {
+        self.plus_minutes_checked(minutes)
+            .expect("addition of minutes overflowed")
+    }
+
+    fn plus_minutes_checked(self, minutes: i64) -> Option<Duration> {
+        match (self, minutes) {
+            (_, 0) => Some(self),
+            (Duration::ZERO, _) => Duration::of_minutes_checked(minutes),
+            _ => minutes
+                .checked_mul(SECONDS_IN_MINUTE)
+                .and_then(|total_seconds| {
+                    plus_internal(self.seconds(), total_seconds, self.nano() as i64)
+                }),
+        }
+    }
+
+    /// Adds the specified number of seconds and returns the result as a new duration.
+    ///
+    /// # Parameters
+    ///  - `seconds`: the second to add, positive or negative.
+    ///
+    /// # Panics
+    /// - if the addition would overflow the result duration.
+    pub fn plus_seconds(self, seconds: i64) -> Duration {
+        self.plus_seconds_checked(seconds)
+            .expect("addition of seconds overflowed")
+    }
+
+    fn plus_seconds_checked(self, seconds: i64) -> Option<Duration> {
+        match (self, seconds) {
+            (_, 0) => Some(self),
+            (Duration::ZERO, _) => Some(Duration::of_seconds(seconds)),
+            _ => plus_internal(self.seconds(), seconds, self.nano() as i64),
+        }
+    }
+
+    /// Adds the specified number of milliseconds and returns the result as a new duration.
+    ///
+    /// # Parameters
+    ///  - `millis`: the milliseconds to add, positive or negative.
+    ///
+    /// # Panics
+    /// - if the addition would overflow the result duration.
+    pub fn plus_millis(self, millis: i64) -> Duration {
+        self.plus_millis_checked(millis)
+            .expect("addition of millis overflowed")
+    }
+
+    fn plus_millis_checked(self, millis: i64) -> Option<Duration> {
+        match (self, millis) {
+            (_, 0) => Some(self),
+            (Duration::ZERO, _) => Some(Duration::of_millis(millis)),
+            _ => {
+                let other_seconds = millis / MILLISECONDS_IN_SECOND;
+                let other_nanos = (millis % MILLISECONDS_IN_SECOND) * NANOSECONDS_IN_MILLISECOND;
+                plus_internal(
+                    self.seconds(),
+                    other_seconds,
+                    self.nano() as i64 + other_nanos,
+                )
+            }
+        }
+    }
+
+    /// Adds the specified number of nanoseconds and returns the result as a new duration.
+    ///
+    /// # Parameters
+    ///  - `nanos`: the nanoseconds to add, positive or negative.
+    ///
+    /// # Panics
+    /// - if the addition would overflow the result duration.
+    pub fn plus_nanos(self, nanos: i64) -> Duration {
+        self.plus_nanos_checked(nanos)
+            .expect("addition of nanos overflowed")
+    }
+
+    fn plus_nanos_checked(self, nanos: i64) -> Option<Duration> {
+        match (self, nanos) {
+            (_, 0) => Some(self),
+            (Duration::ZERO, _) => Some(Duration::of_nanos(nanos)),
+            _ => {
+                let other_seconds = nanos / NANOSECONDS_IN_SECOND;
+                let other_nanos = nanos % NANOSECONDS_IN_SECOND;
+                plus_internal(
+                    self.seconds(),
+                    other_seconds,
+                    self.nano() as i64 + other_nanos,
+                )
+            }
+        }
+    }
+
     /// The total number of days in the duration.
     ///
     /// This returns the total number of days in the duration by dividing the number of seconds by 86,400.
@@ -274,6 +431,20 @@ impl Duration {
             .and_then(|result| result.checked_add(self.nano() as i64))
             .expect("total nanoseconds would overflow")
     }
+}
+
+// This method assumes `left_nanos + right_nanos` will be within one step of correct nanoseconds.
+// (Mostly this means Durations must be well-formed before adding)
+fn plus_internal(left_seconds: i64, right_seconds: i64, nanos: i64) -> Option<Duration> {
+    let (adjustment, final_nanos) = carry_and_nanos(nanos);
+
+    right_seconds
+        .checked_add(adjustment)
+        .and_then(|adjusted_seconds| left_seconds.checked_add(adjusted_seconds))
+        .map(|final_seconds| Duration {
+            seconds: final_seconds,
+            nanoseconds_of_second: final_nanos,
+        })
 }
 
 impl fmt::Display for Duration {
