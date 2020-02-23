@@ -17,6 +17,8 @@ pub mod display;
 #[cfg(test)]
 pub mod factories;
 #[cfg(test)]
+pub mod minus_unit;
+#[cfg(test)]
 pub mod neg;
 #[cfg(test)]
 pub mod plus_unit;
@@ -225,6 +227,117 @@ impl Duration {
         } else {
             checked_neg(self).expect("absolute value would overflow duration")
         }
+    }
+
+    /// Subtracts the specified number of days and returns the result as a new duration.
+    ///
+    /// The number of days is multiplied by 86,400 to obtain the number of seconds to subtract.
+    /// This is based on the standard definition of a day as 24 hours.
+    ///
+    /// # Parameters
+    ///  - `days`: the days to subtract, positive or negative.
+    ///
+    /// # Panics
+    /// - if the subtraction would overflow the result duration.
+    pub fn minus_days(self, days: i64) -> Duration {
+        match days {
+            i64::MIN => self
+                .plus_days_checked(1)
+                .and_then(|d| d.plus_days_checked(i64::MAX)),
+            _ => self.plus_days_checked(-days),
+        }
+        .expect("subtraction of days overflowed")
+    }
+
+    /// Subtracts the specified number of hours and returns the result as a new duration.
+    ///
+    /// The number of hours is multiplied by 3,600 to obtain the number of seconds to subtract.
+    /// This is based on the standard definition of an hour as 60 minutes.
+    ///
+    /// # Parameters
+    ///  - `hours`: the hours to subtract, positive or negative.
+    ///
+    /// # Panics
+    /// - if the subtraction would overflow the result duration.
+    pub fn minus_hours(self, hours: i64) -> Duration {
+        match hours {
+            i64::MIN => self
+                .plus_hours_checked(1)
+                .and_then(|d| d.plus_hours_checked(i64::MAX)),
+            _ => self.plus_hours_checked(-hours),
+        }
+        .expect("subtraction of hours overflowed")
+    }
+
+    /// Subtracts the specified number of minutes and returns the result as a new duration.
+    ///
+    /// The number of minutes is multiplied by 60 to obtain the number of seconds to subtract.
+    /// This is based on the standard definition of a minute as 60 seconds.
+    ///
+    /// # Parameters
+    ///  - `minutes`: the minutes to subtract, positive or negative.
+    ///
+    /// # Panics
+    /// - if the subtraction would overflow the result duration.
+    pub fn minus_minutes(self, minutes: i64) -> Duration {
+        match minutes {
+            i64::MIN => self
+                .plus_minutes_checked(1)
+                .and_then(|d| d.plus_minutes_checked(i64::MAX)),
+            _ => self.plus_minutes_checked(-minutes),
+        }
+        .expect("subtraction of minutes overflowed")
+    }
+
+    /// Subtracts the specified number of seconds and returns the result as a new duration.
+    ///
+    /// # Parameters
+    ///  - `seconds`: the second to subtract, positive or negative.
+    ///
+    /// # Panics
+    /// - if the subtraction would overflow the result duration.
+    pub fn minus_seconds(self, seconds: i64) -> Duration {
+        match seconds {
+            i64::MIN => self
+                .plus_seconds_checked(1)
+                .and_then(|d| d.plus_seconds_checked(i64::MAX)),
+            _ => self.plus_seconds_checked(-seconds),
+        }
+        .expect("subtraction of seconds overflowed")
+    }
+
+    /// Subtracts the specified number of milliseconds and returns the result as a new duration.
+    ///
+    /// # Parameters
+    ///  - `millis`: the milliseconds to subtract, positive or negative.
+    ///
+    /// # Panics
+    /// - if the subtraction would overflow the result duration.
+    pub fn minus_millis(self, millis: i64) -> Duration {
+        match millis {
+            i64::MIN => self
+                .plus_millis_checked(1)
+                .and_then(|d| d.plus_millis_checked(i64::MAX)),
+            _ => self.plus_millis_checked(-millis),
+        }
+        .expect("subtraction of millis overflowed")
+    }
+
+    /// Subtracts the specified number of nanoseconds and returns the result as a new duration.
+    ///
+    /// # Parameters
+    ///  - `nanos`: the nanoseconds to subtract, positive or negative.
+    ///
+    /// # Panics
+    /// - if the subtraction would overflow the result duration.
+    pub fn minus_nanos(self, nanos: i64) -> Duration {
+        match nanos {
+            i64::MIN => self
+                .plus_nanos_checked(1)
+                .and_then(|d| d.plus_nanos_checked(i64::MAX)),
+            _ => self.plus_nanos_checked(-nanos),
+        }
+        .expect("subtraction of nanos overflowed")
     }
 
     /// Adds the specified number of days and returns the result as a new duration.
