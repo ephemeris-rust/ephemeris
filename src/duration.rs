@@ -516,7 +516,7 @@ fn checked_neg(duration: Duration) -> Option<Duration> {
     match (duration.seconds(), duration.nano()) {
         (i64::MIN, 0) => None,
         (i64::MIN, nanos) => Some(Duration {
-            seconds: i64::max_value(),
+            seconds: i64::MAX,
             nanoseconds_of_second: NANOSECONDS_IN_SECOND as u32 - nanos,
         }),
         (seconds, nanos) => {

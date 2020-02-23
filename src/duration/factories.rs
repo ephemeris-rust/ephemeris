@@ -27,7 +27,7 @@ proptest! {
     }
 
     #[test]
-    fn of_hours(hours in (i64::min_value() / SECONDS_IN_HOUR)..=(i64::max_value() / SECONDS_IN_HOUR)) {
+    fn of_hours(hours in (i64::MIN / SECONDS_IN_HOUR)..=(i64::MAX / SECONDS_IN_HOUR)) {
         let duration = Duration::of_hours(hours);
         prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((hours) * SECONDS_IN_HOUR, duration.seconds());
@@ -44,7 +44,7 @@ proptest! {
     }
 
     #[test]
-    fn of_minutes(minutes in (i64::min_value() / SECONDS_IN_MINUTE)..=(i64::max_value() / SECONDS_IN_MINUTE)) {
+    fn of_minutes(minutes in (i64::MIN / SECONDS_IN_MINUTE)..=(i64::MAX / SECONDS_IN_MINUTE)) {
         let duration = Duration::of_minutes(minutes);
         prop_assert_eq!(0, duration.nano());
         prop_assert_eq!((minutes) * SECONDS_IN_MINUTE, duration.seconds());
