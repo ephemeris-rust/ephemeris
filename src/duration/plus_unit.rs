@@ -17,7 +17,7 @@ proptest! {
     }
 
     #[test]
-    fn identity_duration_plus_days(days in i64::min_value() / SECONDS_IN_DAY..i64::max_value() / SECONDS_IN_DAY) {
+    fn identity_duration_plus_days(days in i64::MIN / SECONDS_IN_DAY..i64::MAX / SECONDS_IN_DAY) {
         let added = next(Duration::ZERO.plus_days(days));
         let other = next(Duration::ZERO).plus_days(days);
         prop_assert_eq!(added, other);
@@ -67,7 +67,7 @@ proptest! {
     }
 
     #[test]
-    fn identity_duration_plus_hours(hours in i64::min_value() / SECONDS_IN_HOUR..i64::max_value() / SECONDS_IN_HOUR) {
+    fn identity_duration_plus_hours(hours in i64::MIN / SECONDS_IN_HOUR..i64::MAX / SECONDS_IN_HOUR) {
         let added = next(Duration::ZERO.plus_hours(hours));
         let other = next(Duration::ZERO).plus_hours(hours);
         prop_assert_eq!(added, other);
@@ -117,7 +117,7 @@ proptest! {
     }
 
     #[test]
-    fn identity_duration_plus_minutes(minutes in i64::min_value() / SECONDS_IN_MINUTE..i64::max_value() / SECONDS_IN_MINUTE) {
+    fn identity_duration_plus_minutes(minutes in i64::MIN / SECONDS_IN_MINUTE..i64::MAX / SECONDS_IN_MINUTE) {
         let added = next(Duration::ZERO.plus_minutes(minutes));
         let other = next(Duration::ZERO).plus_minutes(minutes);
         prop_assert_eq!(added, other);
@@ -167,7 +167,7 @@ proptest! {
     }
 
     #[test]
-    fn identity_duration_plus_seconds(seconds in i64::min_value()..i64::max_value()) {
+    fn identity_duration_plus_seconds(seconds in i64::MIN..i64::MAX) {
         let added = next(Duration::ZERO.plus_seconds(seconds));
         let other = next(Duration::ZERO).plus_seconds(seconds);
         prop_assert_eq!(added, other);
@@ -312,7 +312,7 @@ proptest! {
     }
 
     #[test]
-    fn identity_duration_plus_nanos(nanos in i64::min_value()..i64::max_value()) {
+    fn identity_duration_plus_nanos(nanos in i64::MIN..i64::MAX) {
         let added = next(Duration::ZERO.plus_nanos(nanos));
         let other = next(Duration::ZERO).plus_nanos(nanos);
         prop_assert_eq!(added, other);
