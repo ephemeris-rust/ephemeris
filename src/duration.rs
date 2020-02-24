@@ -2,6 +2,7 @@ use std::fmt;
 use std::i64;
 use std::u32;
 
+use std::ops::Add;
 use std::ops::Neg;
 
 use crate::constants::*;
@@ -10,6 +11,8 @@ use crate::util::const_expect;
 
 #[cfg(test)]
 pub mod abs;
+#[cfg(test)]
+pub mod add;
 #[cfg(test)]
 pub mod constants;
 #[cfg(test)]
@@ -543,6 +546,26 @@ impl Duration {
             .checked_mul(NANOSECONDS_IN_SECOND)
             .and_then(|result| result.checked_add(self.nano() as i64))
             .expect("total nanoseconds would overflow")
+    }
+}
+
+impl Add for Duration {
+    type Output = Duration;
+
+    /// Adds one duration to another and returns the result as a new duration.
+    ///
+    /// # Parameters
+    /// - `rhs`: the other duration to add, positive or negative.
+    ///
+    /// # Panics
+    ///  - if the addition would overflow the duration.
+    fn add(self, rhs: Duration) -> Duration {
+        plus_internal(
+            self.seconds(),
+            rhs.seconds(),
+            self.nano() as i64 + rhs.nano() as i64,
+        )
+        .expect("duration addition would overflow")
     }
 }
 
