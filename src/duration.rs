@@ -6,6 +6,7 @@ use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Neg;
 use std::ops::Sub;
+use std::ops::SubAssign;
 
 use crate::constants::*;
 use crate::seconds_nanos::*;
@@ -31,6 +32,8 @@ pub mod neg;
 pub mod plus_unit;
 #[cfg(test)]
 pub mod sub;
+#[cfg(test)]
+pub mod sub_assign;
 #[cfg(test)]
 pub mod test_util;
 #[cfg(test)]
@@ -710,5 +713,18 @@ impl Sub for Duration {
             ),
         }
         .expect("duration subtraction would overflow")
+    }
+}
+
+impl SubAssign for Duration {
+    /// Subtracts one duration from another, and assigns the result to the left hand operand.
+    ///
+    /// # Parameters
+    /// - `rhs`: the other duration to subtract, positive or negative.
+    ///
+    /// # Panics
+    ///  - if the subtraction would overflow the duration.
+    fn sub_assign(&mut self, rhs: Duration) {
+        *self = *self - rhs;
     }
 }
