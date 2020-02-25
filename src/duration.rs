@@ -5,6 +5,7 @@ use std::u32;
 use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Neg;
+use std::ops::Sub;
 
 use crate::constants::*;
 use crate::seconds_nanos::*;
@@ -28,6 +29,8 @@ pub mod minus_unit;
 pub mod neg;
 #[cfg(test)]
 pub mod plus_unit;
+#[cfg(test)]
+pub mod sub;
 #[cfg(test)]
 pub mod test_util;
 #[cfg(test)]
@@ -678,5 +681,34 @@ fn checked_neg(duration: Duration) -> Option<Duration> {
                 nanoseconds_of_second: flipped_nanos,
             })
         }
+    }
+}
+
+impl Sub for Duration {
+    type Output = Duration;
+
+    /// Subtracts one duration from another and returns the result as a new duration.
+    ///
+    /// # Parameters
+    /// - `rhs`: the other duration to subtract, positive or negative.
+    ///
+    /// # Panics
+    ///  - if the subtraction would overflow the duration.
+    fn sub(self, rhs: Duration) -> Duration {
+        match (rhs, rhs.seconds()) {
+            (Duration::ZERO, _) => Some(self),
+            (_, i64::MIN) =>
+            // Do the offsetting of nanos early, because otherwise nano-offset + max seconds might overflow.
+            {
+                plus_internal(self.seconds(), 1, self.nano() as i64 - (rhs.nano() as i64))
+                    .and_then(|added| plus_internal(added.seconds(), i64::MAX, added.nano() as i64))
+            }
+            _ => plus_internal(
+                self.seconds(),
+                -rhs.seconds(),
+                self.nano() as i64 - (rhs.nano() as i64),
+            ),
+        }
+        .expect("duration subtraction would overflow")
     }
 }
