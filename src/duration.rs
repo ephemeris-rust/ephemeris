@@ -17,8 +17,6 @@ pub mod abs;
 #[cfg(test)]
 pub mod add;
 #[cfg(test)]
-pub mod add_assign;
-#[cfg(test)]
 pub mod constants;
 #[cfg(test)]
 pub mod display;
