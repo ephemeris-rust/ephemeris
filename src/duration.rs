@@ -31,8 +31,6 @@ pub mod plus_unit;
 #[cfg(test)]
 pub mod sub;
 #[cfg(test)]
-pub mod sub_assign;
-#[cfg(test)]
 pub mod test_util;
 #[cfg(test)]
 pub mod to;
