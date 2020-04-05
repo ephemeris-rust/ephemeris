@@ -25,11 +25,11 @@ pub fn arb_duration_remaining_units(unit_nanos: i64) -> impl Strategy<Value = (D
         .prop_flat_map(|(nanos, unit_nanos)| {
             let upper = min(
                 i64::MAX as i128,
-                (MAX_NANOS - if nanos > 0 { nanos } else { 0 }) / unit_nanos as i128,
+                (MAX_NANOS - max(nanos, 0)) / unit_nanos as i128,
             ) as i64;
             let lower = max(
                 i64::MIN as i128,
-                (MIN_NANOS - if nanos < 0 { nanos } else { 0 }) / unit_nanos as i128,
+                (MIN_NANOS - min(nanos, 0)) / unit_nanos as i128,
             ) as i64;
 
             let seconds = (nanos / NANOSECONDS_IN_SECOND as i128) as i64;
@@ -101,8 +101,8 @@ fn to_duration(nanos: i128) -> Duration {
 pub fn duration_total() -> impl Strategy<Value = (Duration, Duration, Duration)> {
     (MIN_NANOS..=MAX_NANOS)
         .prop_flat_map(|nanos| {
-            let upper = MAX_NANOS - if nanos > 0 { nanos } else { 0 };
-            let lower = MIN_NANOS - if nanos < 0 { nanos } else { 0 };
+            let upper = MAX_NANOS - max(nanos, 0);
+            let lower = MIN_NANOS - min(nanos, 0);
             (Just(nanos), lower..=upper)
         })
         .prop_map(|(left, right)| {
