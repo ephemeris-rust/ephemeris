@@ -1,9 +1,11 @@
 use std::fmt;
+use std::i32;
 use std::i64;
 use std::u32;
 
 use std::ops::Add;
 use std::ops::AddAssign;
+use std::ops::Mul;
 use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::SubAssign;
@@ -24,6 +26,8 @@ pub mod display;
 pub mod factories;
 #[cfg(test)]
 pub mod minus_unit;
+#[cfg(test)]
+pub mod multiply;
 #[cfg(test)]
 pub mod neg;
 #[cfg(test)]
@@ -552,6 +556,41 @@ impl Duration {
             .and_then(|result| result.checked_add(self.nano() as i64))
             .expect("total nanoseconds would overflow")
     }
+
+    fn checked_mul(self, multiplicand: i64) -> Option<Duration> {
+        const SMALL_UPPER: i64 = i32::MAX as i64;
+        const SMALL_LOWER: i64 = i32::MIN as i64;
+
+        match (self, self.seconds(), multiplicand) {
+            (_, _, 1) => Some(self),
+            (_, _, 0) | (Duration::ZERO, _, _) => Some(Duration::ZERO),
+            (_, _, -1) => checked_neg(self),
+            // If both are within the i32 bounds, seconds (and nanos) cannot overflow.
+            // This is probably the 90% case.
+            (_, SMALL_LOWER..=SMALL_UPPER, SMALL_LOWER..=SMALL_UPPER) => {
+                // Splitting the duration here works thanks to the distributive property.
+                let seconds = self.seconds() * multiplicand;
+                let nanos = self.nano() as i64 * multiplicand;
+                Some(Duration::of_seconds_and_adjustment(seconds, nanos))
+            }
+            _ => {
+                const LOWER_LIMIT: i128 = i64::MIN as i128 * NANOSECONDS_IN_SECOND as i128;
+                const UPPER_LIMIT: i128 = (i64::MAX as i128 + 1) * NANOSECONDS_IN_SECOND as i128;
+                let nanos =
+                    self.seconds() as i128 * NANOSECONDS_IN_SECOND as i128 + self.nano() as i128;
+                nanos.checked_mul(multiplicand as i128).and_then(|n| {
+                    if n < LOWER_LIMIT || n >= UPPER_LIMIT {
+                        None
+                    } else {
+                        Some(Duration::of_seconds_and_adjustment(
+                            (n / NANOSECONDS_IN_SECOND as i128) as i64,
+                            (n % NANOSECONDS_IN_SECOND as i128) as i64,
+                        ))
+                    }
+                })
+            }
+        }
+    }
 }
 
 impl Add for Duration {
@@ -648,6 +687,22 @@ impl fmt::Display for Duration {
         }
 
         Ok(())
+    }
+}
+
+impl Mul<i64> for Duration {
+    type Output = Duration;
+
+    /// Returns a copy of this duration multiplied by the specified value.
+    ///
+    /// # Parameters
+    /// - `multiplicand`: the number to multiply by, positive or negative.
+    ///
+    /// # Panics
+    ///  - if the multiplication would overflow.
+    fn mul(self, multiplicand: i64) -> Duration {
+        self.checked_mul(multiplicand)
+            .expect("duration multiplication would overflow")
     }
 }
 

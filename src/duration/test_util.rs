@@ -17,6 +17,15 @@ pub fn arb_duration() -> impl Strategy<Value = Duration> {
         .prop_map(|(seconds, nanos)| Duration::of_seconds_and_adjustment(seconds, nanos))
 }
 
+fn total_nanos(d: Duration) -> i128 {
+    d.seconds() as i128 * NANOSECONDS_IN_SECOND as i128 + d.nano() as i128
+}
+
+pub fn arb_duration_range(lower: Duration, upper: Duration) -> impl Strategy<Value = Duration> {
+    (total_nanos(lower)..=total_nanos(upper))
+        .prop_map(|nanos| to_duration(nanos))
+}
+
 pub fn arb_duration_remaining_units(unit_nanos: i64) -> impl Strategy<Value = (Duration, i64)> {
     (
         MIN_NANOS + unit_nanos as i128..=MAX_NANOS - unit_nanos as i128,
@@ -92,7 +101,7 @@ pub fn arb_duration_underflow_units(unit_nanos: i64) -> impl Strategy<Value = (D
         })
 }
 
-fn to_duration(nanos: i128) -> Duration {
+pub fn to_duration(nanos: i128) -> Duration {
     let seconds = (nanos / NANOSECONDS_IN_SECOND as i128) as i64;
     let nanos_in_second = (nanos % NANOSECONDS_IN_SECOND as i128) as i64;
     Duration::of_seconds_and_adjustment(seconds, nanos_in_second)
