@@ -35,6 +35,107 @@ pub fn arb_duration_underflow() -> impl Strategy<Value = (Duration, i64)> {
         .prop_map(|(nanos, factor, sign)| (to_duration(nanos * sign as i128), factor * sign))
 }
 
+prop_compose! {
+    fn multiply_specific_data()
+        (data in proptest::sample::select(
+            vec![
+				(Duration::of_seconds_and_adjustment(-4, 666666667), -3, Duration::of_seconds_and_adjustment(9, 999999999)),
+				(Duration::of_seconds_and_adjustment(-4, 666666667), -2, Duration::of_seconds_and_adjustment(6, 666666666)),
+				(Duration::of_seconds_and_adjustment(-4, 666666667), -1, Duration::of_seconds_and_adjustment(3, 333333333)),
+				(Duration::of_seconds_and_adjustment(-4, 666666667), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(-4, 666666667), 1, Duration::of_seconds_and_adjustment(-4, 666666667)),
+				(Duration::of_seconds_and_adjustment(-4, 666666667), 2, Duration::of_seconds_and_adjustment(-7, 333333334)),
+				(Duration::of_seconds_and_adjustment(-4, 666666667), 3, Duration::of_seconds_and_adjustment(-10, 000000001)),
+      
+				(Duration::of_seconds_and_adjustment(-3, 0), -3, Duration::of_seconds_and_adjustment(9, 0)),
+				(Duration::of_seconds_and_adjustment(-3, 0), -2, Duration::of_seconds_and_adjustment(6, 0)),
+				(Duration::of_seconds_and_adjustment(-3, 0), -1, Duration::of_seconds_and_adjustment(3, 0)),
+				(Duration::of_seconds_and_adjustment(-3, 0), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(-3, 0), 1, Duration::of_seconds_and_adjustment(-3, 0)),
+				(Duration::of_seconds_and_adjustment(-3, 0), 2, Duration::of_seconds_and_adjustment(-6, 0)),
+				(Duration::of_seconds_and_adjustment(-3, 0), 3, Duration::of_seconds_and_adjustment(-9, 0)),
+      
+				(Duration::of_seconds_and_adjustment(-2, 0), -3, Duration::of_seconds_and_adjustment(6, 0)),
+				(Duration::of_seconds_and_adjustment(-2, 0), -2, Duration::of_seconds_and_adjustment(4, 0)),
+				(Duration::of_seconds_and_adjustment(-2, 0), -1, Duration::of_seconds_and_adjustment(2, 0)),
+				(Duration::of_seconds_and_adjustment(-2, 0), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(-2, 0), 1, Duration::of_seconds_and_adjustment(-2, 0)),
+				(Duration::of_seconds_and_adjustment(-2, 0), 2, Duration::of_seconds_and_adjustment(-4, 0)),
+				(Duration::of_seconds_and_adjustment(-2, 0), 3, Duration::of_seconds_and_adjustment(-6, 0)),
+      
+				(Duration::of_seconds_and_adjustment(-1, 0), -3, Duration::of_seconds_and_adjustment(3, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 0), -2, Duration::of_seconds_and_adjustment(2, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 0), -1, Duration::of_seconds_and_adjustment(1, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 0), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 0), 1, Duration::of_seconds_and_adjustment(-1, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 0), 2, Duration::of_seconds_and_adjustment(-2, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 0), 3, Duration::of_seconds_and_adjustment(-3, 0)),
+      
+				(Duration::of_seconds_and_adjustment(-1, 500000000), -3, Duration::of_seconds_and_adjustment(1, 500000000)),
+				(Duration::of_seconds_and_adjustment(-1, 500000000), -2, Duration::of_seconds_and_adjustment(1, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 500000000), -1, Duration::of_seconds_and_adjustment(0, 500000000)),
+				(Duration::of_seconds_and_adjustment(-1, 500000000), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 500000000), 1, Duration::of_seconds_and_adjustment(-1, 500000000)),
+				(Duration::of_seconds_and_adjustment(-1, 500000000), 2, Duration::of_seconds_and_adjustment(-1, 0)),
+				(Duration::of_seconds_and_adjustment(-1, 500000000), 3, Duration::of_seconds_and_adjustment(-2, 500000000)),
+      
+				(Duration::of_seconds_and_adjustment(0, 0), -3, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(0, 0), -2, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(0, 0), -1, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(0, 0), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(0, 0), 1, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(0, 0), 2, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(0, 0), 3, Duration::of_seconds_and_adjustment(0, 0)),
+      
+				(Duration::of_seconds_and_adjustment(0, 500000000), -3, Duration::of_seconds_and_adjustment(-2, 500000000)),
+				(Duration::of_seconds_and_adjustment(0, 500000000), -2, Duration::of_seconds_and_adjustment(-1, 0)),
+				(Duration::of_seconds_and_adjustment(0, 500000000), -1, Duration::of_seconds_and_adjustment(-1, 500000000)),
+				(Duration::of_seconds_and_adjustment(0, 500000000), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(0, 500000000), 1, Duration::of_seconds_and_adjustment(0, 500000000)),
+				(Duration::of_seconds_and_adjustment(0, 500000000), 2, Duration::of_seconds_and_adjustment(1, 0)),
+				(Duration::of_seconds_and_adjustment(0, 500000000), 3, Duration::of_seconds_and_adjustment(1, 500000000)),
+      
+				(Duration::of_seconds_and_adjustment(1, 0), -3, Duration::of_seconds_and_adjustment(-3, 0)),
+				(Duration::of_seconds_and_adjustment(1, 0), -2, Duration::of_seconds_and_adjustment(-2, 0)),
+				(Duration::of_seconds_and_adjustment(1, 0), -1, Duration::of_seconds_and_adjustment(-1, 0)),
+				(Duration::of_seconds_and_adjustment(1, 0), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(1, 0), 1, Duration::of_seconds_and_adjustment(1, 0)),
+				(Duration::of_seconds_and_adjustment(1, 0), 2, Duration::of_seconds_and_adjustment(2, 0)),
+				(Duration::of_seconds_and_adjustment(1, 0), 3, Duration::of_seconds_and_adjustment(3, 0)),
+      
+				(Duration::of_seconds_and_adjustment(2, 0), -3, Duration::of_seconds_and_adjustment(-6, 0)),
+				(Duration::of_seconds_and_adjustment(2, 0), -2, Duration::of_seconds_and_adjustment(-4, 0)),
+				(Duration::of_seconds_and_adjustment(2, 0), -1, Duration::of_seconds_and_adjustment(-2, 0)),
+				(Duration::of_seconds_and_adjustment(2, 0), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(2, 0), 1, Duration::of_seconds_and_adjustment(2, 0)),
+				(Duration::of_seconds_and_adjustment(2, 0), 2, Duration::of_seconds_and_adjustment(4, 0)),
+				(Duration::of_seconds_and_adjustment(2, 0), 3, Duration::of_seconds_and_adjustment(6, 0)),
+      
+				(Duration::of_seconds_and_adjustment(3, 0), -3, Duration::of_seconds_and_adjustment(-9, 0)),
+				(Duration::of_seconds_and_adjustment(3, 0), -2, Duration::of_seconds_and_adjustment(-6, 0)),
+				(Duration::of_seconds_and_adjustment(3, 0), -1, Duration::of_seconds_and_adjustment(-3, 0)),
+				(Duration::of_seconds_and_adjustment(3, 0), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(3, 0), 1, Duration::of_seconds_and_adjustment(3, 0)),
+				(Duration::of_seconds_and_adjustment(3, 0), 2, Duration::of_seconds_and_adjustment(6, 0)),
+				(Duration::of_seconds_and_adjustment(3, 0), 3, Duration::of_seconds_and_adjustment(9, 0)),
+      
+				(Duration::of_seconds_and_adjustment(3, 333333333), -3, Duration::of_seconds_and_adjustment(-10, 000000001)),
+				(Duration::of_seconds_and_adjustment(3, 333333333), -2, Duration::of_seconds_and_adjustment(-7, 333333334)),
+				(Duration::of_seconds_and_adjustment(3, 333333333), -1, Duration::of_seconds_and_adjustment(-4, 666666667)),
+				(Duration::of_seconds_and_adjustment(3, 333333333), 0, Duration::of_seconds_and_adjustment(0, 0)),
+				(Duration::of_seconds_and_adjustment(3, 333333333), 1, Duration::of_seconds_and_adjustment(3, 333333333)),
+				(Duration::of_seconds_and_adjustment(3, 333333333), 2, Duration::of_seconds_and_adjustment(6, 666666666)),
+                (Duration::of_seconds_and_adjustment(3, 333333333), 3, Duration::of_seconds_and_adjustment(9, 999999999)),
+                
+                (Duration::of_seconds(1), i64::MAX, Duration::of_seconds(i64::MAX)),
+                (Duration::of_seconds(1), i64::MIN, Duration::MIN)
+            ]
+        )) -> (Duration, i64, Duration)
+        {
+            data
+        }
+}
+
 proptest! {
     #[test]
     fn multiply_unit(duration in arb_duration()) {
@@ -74,5 +175,10 @@ proptest! {
     #[test]
     fn add_underflow((duration, scalar) in arb_duration_underflow()) {
         expect_panic("duration multiplication would overflow", || duration * scalar)?;
+    }
+
+    #[test]
+    fn multiply_specific((duration, factor, expected) in multiply_specific_data()) {
+        prop_assert_eq!(duration * factor, expected);
     }
 }
