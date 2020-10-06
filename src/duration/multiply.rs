@@ -168,12 +168,12 @@ proptest! {
     }
 
     #[test]
-    fn add_overflow((duration, scalar) in arb_duration_overflow()) {
+    fn multiply_overflow((duration, scalar) in arb_duration_overflow()) {
         expect_panic("duration multiplication would overflow", || duration * scalar)?;
     }
 
     #[test]
-    fn add_underflow((duration, scalar) in arb_duration_underflow()) {
+    fn multiply_underflow((duration, scalar) in arb_duration_underflow()) {
         expect_panic("duration multiplication would overflow", || duration * scalar)?;
     }
 
