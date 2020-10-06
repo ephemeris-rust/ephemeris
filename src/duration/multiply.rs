@@ -180,5 +180,79 @@ proptest! {
     #[test]
     fn multiply_specific((duration, factor, expected) in multiply_specific_data()) {
         prop_assert_eq!(duration * factor, expected);
+	}
+	
+	
+    #[test]
+    fn multiply_assign_unit(duration in arb_duration()) {
+		let mut other = duration;
+		other *= 0;
+		
+        prop_assert_eq!(Duration::ZERO, other);
+    }
+
+    #[test]
+    fn multiply_assign_identity(duration in arb_duration()) {		
+		let mut other = duration;
+		other *= 1;
+		
+        prop_assert_eq!(duration, other);
+    }
+
+    #[test]
+    fn multiply_assign_associative(
+        duration in arb_duration_range(Duration::of_seconds(i32::MIN as i64 - 1), Duration::of_seconds(i32::MAX as i64 + 1)), 
+        a in prop::num::i16::ANY.prop_map(|i| i as i64), 
+        b in prop::num::i16::ANY.prop_map(|i| i as i64)) {
+
+		let mut left_a = duration;
+		left_a *= a;
+		left_a *= b;
+
+		let mut left_b = duration;
+		left_b *= a * b;
+		
+        prop_assert_eq!(left_a, left_b);
+    }
+
+    #[test]
+    fn multiply_assign_distributive(
+        left in arb_duration_range(Duration::of_seconds(i32::MIN as i64 - 1), Duration::of_seconds(i32::MAX as i64 + 1)), 
+        right in arb_duration_range(Duration::of_seconds(i32::MIN as i64 - 1), Duration::of_seconds(i32::MAX as i64 + 1)), 
+        factor in prop::num::i32::ANY.prop_map(|i| i as i64)) {
+
+		let mut added = left + right;
+		added *= factor;
+
+		let mut multiplied_left = left;
+		multiplied_left *= factor;
+
+		let mut multiplied_right = right;
+		multiplied_right *= factor;
+		
+        prop_assert_eq!(added, multiplied_left + multiplied_right);
+    }
+
+    #[test]
+    fn multiply_assign_overflow((duration, scalar) in arb_duration_overflow()) {
+		expect_panic("duration multiplication would overflow", || {
+			let mut duration_copy = duration;
+			duration_copy *= scalar;
+		})?;
+    }
+
+    #[test]
+    fn multiply_assign_underflow((duration, scalar) in arb_duration_underflow()) {		
+		expect_panic("duration multiplication would overflow", || {
+			let mut duration_copy = duration;
+			duration_copy *= scalar;
+		})?;
+    }
+
+    #[test]
+    fn multiply_assign_specific((duration, factor, expected) in multiply_specific_data()) {
+		let mut duration_copy = duration;
+		duration_copy *= factor;
+        prop_assert_eq!(duration_copy, expected);
     }
 }

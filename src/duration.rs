@@ -6,6 +6,7 @@ use std::u32;
 use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Mul;
+use std::ops::MulAssign;
 use std::ops::Neg;
 use std::ops::Sub;
 use std::ops::SubAssign;
@@ -703,6 +704,19 @@ impl Mul<i64> for Duration {
     fn mul(self, multiplicand: i64) -> Duration {
         self.checked_mul(multiplicand)
             .expect("duration multiplication would overflow")
+    }
+}
+
+impl MulAssign<i64> for Duration {
+    /// Multiplies a duration by a factor, and assigns the result to the left hand operand.
+    ///
+    /// # Parameters
+    /// - `multiplicand`: the number to multiply by, positive or negative.
+    ///
+    /// # Panics
+    ///  - if the multiplication would overflow.
+    fn mul_assign(&mut self, multiplicand: i64) {
+        *self = *self * multiplicand;
     }
 }
 
