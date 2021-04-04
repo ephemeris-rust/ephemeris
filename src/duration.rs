@@ -592,6 +592,33 @@ impl Duration {
             }
         }
     }
+
+    /// Returns a copy of this duration with the indicated nanoseconds.
+    ///
+    /// This returns a copy of this duration with the indicated nanoseconds, retaining the original seconds.
+    ///
+    /// # Panics
+    /// - if the amount of nanoseconds would be equal to or greater than a second.
+    pub fn with_nanos(&self, nanos: u32) -> Duration {
+        if nanos >= NANOSECONDS_IN_SECOND as u32 {
+            panic!("")
+        }
+
+        Duration {
+            seconds: self.seconds,
+            nanoseconds_of_second: nanos
+        }
+    }
+
+    /// Returns a copy of this duration with the indicated nanoseconds.
+    ///
+    /// This returns a copy of this duration with the indicated seconds, retaining the original nanoseconds.
+    pub const fn with_seconds(&self, seconds: i64) -> Duration {
+        Duration {
+            seconds: seconds,
+            nanoseconds_of_second: self.nano()
+        }
+    }
 }
 
 impl Add for Duration {
@@ -674,7 +701,7 @@ impl fmt::Display for Duration {
 
         let remaining_seconds = effective_seconds % SECONDS_IN_MINUTE;
         if remaining_seconds != 0 || directed_nanos != 0 {
-            if remaining_seconds == 0 && effective_seconds < 0 {
+            if remaining_seconds == 0 && self.seconds() < 0 {
                 f.write_str("-0")?;
             } else {
                 remaining_seconds.fmt(f)?;
