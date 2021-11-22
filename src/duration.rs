@@ -606,7 +606,7 @@ impl Duration {
 
         Duration {
             seconds: self.seconds,
-            nanoseconds_of_second: nanos
+            nanoseconds_of_second: nanos,
         }
     }
 
@@ -615,8 +615,8 @@ impl Duration {
     /// This returns a copy of this duration with the indicated seconds, retaining the original nanoseconds.
     pub const fn with_seconds(&self, seconds: i64) -> Duration {
         Duration {
-            seconds: seconds,
-            nanoseconds_of_second: self.nano()
+            seconds,
+            nanoseconds_of_second: self.nano(),
         }
     }
 }

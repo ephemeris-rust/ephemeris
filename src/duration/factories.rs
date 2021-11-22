@@ -61,7 +61,9 @@ proptest! {
     }
 }
 
-const DURATION_SAFE_UPPER_BOUND: i64 = Duration::MAX.seconds() - i64::MAX / NANOSECONDS_IN_SECOND;
+#[allow(clippy::identity_op)]
+const DURATION_SAFE_UPPER_BOUND: i64 =
+    Duration::MAX.seconds() - i64::MAX / NANOSECONDS_IN_SECOND + 0;
 const DURATION_SAFE_LOWER_BOUND: i64 =
     Duration::MIN.seconds() - i64::MIN / NANOSECONDS_IN_SECOND + 1;
 

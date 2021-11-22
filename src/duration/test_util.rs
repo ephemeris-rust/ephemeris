@@ -22,8 +22,7 @@ fn total_nanos(d: Duration) -> i128 {
 }
 
 pub fn arb_duration_range(lower: Duration, upper: Duration) -> impl Strategy<Value = Duration> {
-    (total_nanos(lower)..=total_nanos(upper))
-        .prop_map(|nanos| to_duration(nanos))
+    (total_nanos(lower)..=total_nanos(upper)).prop_map(to_duration)
 }
 
 pub fn arb_duration_remaining_units(unit_nanos: i64) -> impl Strategy<Value = (Duration, i64)> {
