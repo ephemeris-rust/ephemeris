@@ -5,7 +5,7 @@ use crate::{
 };
 
 #[cfg(test)]
-pub mod factories;
+mod factories;
 
 /// An instantaneous point in time along the timeline.
 ///
