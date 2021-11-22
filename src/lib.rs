@@ -4,10 +4,9 @@ mod instant;
 mod seconds_nanos;
 mod util;
 
-pub use crate::duration::Duration;
-pub use crate::instant::Instant;
+pub use crate::{duration::Duration, instant::Instant};
 
 #[cfg(test)]
-pub mod assert;
+mod assert;
 #[cfg(test)]
-pub mod test_util;
+mod test_util;

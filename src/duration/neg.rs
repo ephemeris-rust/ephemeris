@@ -1,12 +1,6 @@
-use std::i64;
-
 use proptest::prelude::*;
 
-use crate::constants::*;
-
-use crate::Duration;
-
-use crate::duration::test_util::arb_duration;
+use crate::{constants::*, duration::test_util::*, Duration};
 
 proptest! {
     #[test]
@@ -27,7 +21,7 @@ proptest! {
     }
 }
 
-pub fn amplitude(duration: Duration) -> (i64, u32) {
+pub(crate) fn amplitude(duration: Duration) -> (i64, u32) {
     match (duration.seconds(), duration.nano()) {
         (0..=i64::MAX, _) => (duration.seconds(), duration.nano()),
         (seconds, 0) => (-seconds, 0),

@@ -9,7 +9,7 @@ fn panic_message(err: Box<dyn std::any::Any + Send>) -> Option<String> {
 }
 
 // TODO: Remove when proptest gets built-in `should_panic` behavior
-pub fn expect_panic<F: FnOnce() -> R + std::panic::UnwindSafe, R>(
+pub(crate) fn expect_panic<F: FnOnce() -> R + std::panic::UnwindSafe, R>(
     expected_message: &str,
     f: F,
 ) -> Result<(), TestCaseError> {

@@ -1,12 +1,6 @@
-use std::i64;
-
 use proptest::prelude::*;
 
-use crate::constants::*;
-
-use crate::Instant;
-
-use crate::assert::expect_panic;
+use crate::{assert::expect_panic, constants::*, Instant};
 
 #[allow(clippy::identity_op)]
 const INSTANT_SAFE_UPPER_BOUND: i64 =

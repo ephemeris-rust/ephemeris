@@ -1,14 +1,6 @@
-use std::i64;
-
 use proptest::prelude::*;
 
-use crate::constants::*;
-
-use crate::Duration;
-
-use crate::assert::expect_panic;
-
-use crate::duration::test_util::*;
+use crate::{assert::expect_panic, constants::*, duration::test_util::*, Duration};
 
 proptest! {
     #[test]

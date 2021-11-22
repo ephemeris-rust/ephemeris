@@ -1,9 +1,9 @@
 use proptest::prelude::*;
 
-use crate::Duration;
-
-use crate::duration::neg::amplitude;
-use crate::duration::test_util::arb_duration;
+pub(crate) use crate::{
+    duration::{neg::amplitude, test_util::*},
+    Duration,
+};
 
 proptest! {
     #[test]

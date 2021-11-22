@@ -1,11 +1,6 @@
-use std::i64;
+use proptest::{prelude::*, sample::*};
 
-use proptest::prelude::*;
-use proptest::sample::*;
-
-use crate::constants::*;
-
-use crate::Duration;
+use crate::{constants::*, Duration};
 
 prop_compose! {
     fn duration_and_format()

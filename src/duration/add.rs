@@ -1,12 +1,10 @@
-use std::i64;
-
 use proptest::prelude::*;
 
-use crate::Duration;
-
-use crate::assert::expect_panic;
-
-use crate::duration::test_util::*;
+use crate::{
+    assert::expect_panic,
+    duration::{abs::arb_duration, test_util::*},
+    Duration,
+};
 
 prop_compose! {
     fn add_specific_data()

@@ -1,8 +1,4 @@
-use std::i64;
-
-use crate::constants::*;
-
-use crate::Duration;
+use crate::{constants::*, Duration};
 
 #[test]
 fn max() {
