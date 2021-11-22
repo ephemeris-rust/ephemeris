@@ -1,8 +1,6 @@
-use std::i64;
+use crate::constants::NANOSECONDS_IN_SECOND;
 
-use crate::constants::*;
-
-pub const fn of_seconds_and_adjustment_checked(
+pub(crate) const fn of_seconds_and_adjustment_checked(
     seconds: i64,
     nano_adjustment: i64,
 ) -> Option<(i64, u32)> {
@@ -14,7 +12,7 @@ pub const fn of_seconds_and_adjustment_checked(
     }
 }
 
-pub const fn seconds_and_nanos(nanoseconds: i64) -> (i64, u32) {
+pub(crate) const fn seconds_and_nanos(nanoseconds: i64) -> (i64, u32) {
     let (base_adjustment, base_nanos) = (
         nanoseconds / NANOSECONDS_IN_SECOND,
         nanoseconds % NANOSECONDS_IN_SECOND,
@@ -25,7 +23,7 @@ pub const fn seconds_and_nanos(nanoseconds: i64) -> (i64, u32) {
 }
 
 // A second adjustment for when nanoseconds are within 1 step, instead of unbounded.
-pub const fn carry_and_nanos(nanoseconds: i64) -> (i64, u32) {
+pub(crate) const fn carry_and_nanos(nanoseconds: i64) -> (i64, u32) {
     assert!(nanoseconds > -NANOSECONDS_IN_SECOND && nanoseconds < 2 * NANOSECONDS_IN_SECOND);
     if nanoseconds < 0 {
         (-1, (nanoseconds + NANOSECONDS_IN_SECOND) as u32)

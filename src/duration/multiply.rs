@@ -1,23 +1,11 @@
-use std::i128;
-use std::i64;
+use proptest::{prelude::*, sample::*};
 
-use proptest::prelude::*;
-use proptest::sample::*;
-
-use crate::constants::*;
-
-use crate::Duration;
-
-use crate::assert::expect_panic;
-
-use crate::duration::test_util::arb_duration;
-use crate::duration::test_util::arb_duration_range;
-use crate::duration::test_util::to_duration;
+use crate::{assert::expect_panic, constants::*, duration::test_util::*, Duration};
 
 const MIN_NANOS: i128 = i64::MIN as i128 * NANOSECONDS_IN_SECOND as i128;
 const MAX_NANOS: i128 = (i64::MAX as i128 + 1) * NANOSECONDS_IN_SECOND as i128 - 1;
 
-pub fn arb_duration_overflow() -> impl Strategy<Value = (Duration, i64)> {
+fn arb_duration_overflow() -> impl Strategy<Value = (Duration, i64)> {
     (MAX_NANOS / i64::MAX as i128..=MAX_NANOS)
         .prop_flat_map(|nanos| {
             let lower = (MAX_NANOS / nanos + 1) as i64;
@@ -26,7 +14,7 @@ pub fn arb_duration_overflow() -> impl Strategy<Value = (Duration, i64)> {
         .prop_map(|(nanos, factor, sign)| (to_duration(nanos * sign as i128), factor * sign))
 }
 
-pub fn arb_duration_underflow() -> impl Strategy<Value = (Duration, i64)> {
+fn arb_duration_underflow() -> impl Strategy<Value = (Duration, i64)> {
     (MIN_NANOS..=MIN_NANOS / i64::MAX as i128)
         .prop_flat_map(|nanos| {
             let lower = (MIN_NANOS / nanos - 1) as i64;
