@@ -85,8 +85,8 @@ prop_compose! {
                 (Duration::of_seconds_and_adjustment(-60, 100_000_000), "PT-59.9S".to_owned()),
                 (Duration::of_seconds_and_adjustment(-59, -900_000_000), "PT-59.9S".to_owned()),
                 (Duration::of_seconds_and_adjustment(-60, -100_000_000), "PT-1M-0.1S".to_owned()),
-                // (Duration::of_seconds_and_adjustment(i64::MAX, 0), format!("PT{}H{}M{}S", i64::MAX / 3600,  (i64::MAX % 3600) / 60, i64::MAX % 60)),
-                // (Duration::of_seconds_and_adjustment(i64::MIN, 0), format!("PT{}H{}M{}S", i64::MIN / 3600,  (i64::MIN % 3600) / 60, i64::MIN % 60)),
+                (Duration::of_seconds_and_adjustment(i64::MAX, 0), format!("PT{}H{}M{}S", i64::MAX / 3600,  (i64::MAX % 3600) / 60, i64::MAX % 60)),
+                (Duration::of_seconds_and_adjustment(i64::MIN, 0), format!("PT{}H{}M{}S", i64::MIN / 3600,  (i64::MIN % 3600) / 60, i64::MIN % 60)),
             ]
         )) -> (Duration, String)
         {
