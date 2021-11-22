@@ -14,29 +14,29 @@ use crate::{
 };
 
 #[cfg(test)]
-pub mod abs;
+mod abs;
 #[cfg(test)]
-pub mod add;
+mod add;
 #[cfg(test)]
-pub mod constants;
+mod constants;
 #[cfg(test)]
-pub mod display;
+mod display;
 #[cfg(test)]
-pub mod factories;
+mod factories;
 #[cfg(test)]
-pub mod minus_unit;
+mod minus_unit;
 #[cfg(test)]
-pub mod multiply;
+mod multiply;
 #[cfg(test)]
-pub mod neg;
+mod neg;
 #[cfg(test)]
-pub mod plus_unit;
+mod plus_unit;
 #[cfg(test)]
-pub mod sub;
+mod sub;
 #[cfg(test)]
-pub mod test_util;
+mod test_util;
 #[cfg(test)]
-pub mod to;
+mod to;
 
 /// A time-based amount of time, such as '34.5 seconds'.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
