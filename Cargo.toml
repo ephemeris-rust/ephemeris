@@ -8,7 +8,7 @@ categories = ["date-and-time"]
 license = "MIT"
 readme = "README.md"
 authors = ["Stephen A. Imhoff <clockwork-muse@outlook.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 
