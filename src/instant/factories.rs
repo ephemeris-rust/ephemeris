@@ -8,6 +8,7 @@ use crate::Instant;
 
 use crate::assert::expect_panic;
 
+#[allow(clippy::identity_op)]
 const INSTANT_SAFE_UPPER_BOUND: i64 =
     Instant::MAX.epoch_second() - i64::MAX / NANOSECONDS_IN_SECOND;
 const INSTANT_SAFE_LOWER_BOUND: i64 =
