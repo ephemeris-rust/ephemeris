@@ -2,6 +2,7 @@ use std::i64;
 
 use crate::constants::*;
 use crate::seconds_nanos::*;
+use crate::util::const_expect;
 
 #[cfg(test)]
 pub mod factories;
@@ -42,7 +43,7 @@ impl Instant {
     ///
     /// # Parameters
     ///  - `epoch_milliseconds`: the milliseconds since the epoch.
-    pub fn of_epoch_milli(epoch_milliseconds: i64) -> Instant {
+    pub const fn of_epoch_milli(epoch_milliseconds: i64) -> Instant {
         let seconds = epoch_milliseconds / MILLISECONDS_IN_SECOND;
         let adjustment = (epoch_milliseconds % MILLISECONDS_IN_SECOND) * NANOSECONDS_IN_MILLISECOND;
 
@@ -73,21 +74,28 @@ impl Instant {
     ///
     /// # Panics
     /// - if the adjusted amount of seconds would overflow the instant.
-    pub fn of_epoch_second_and_adjustment(epoch_seconds: i64, nano_adjustment: i64) -> Instant {
-        Instant::of_epoch_second_and_adjustment_checked(epoch_seconds, nano_adjustment)
-            .expect("nano adjustment would overflow instant")
+    pub const fn of_epoch_second_and_adjustment(
+        epoch_seconds: i64,
+        nano_adjustment: i64,
+    ) -> Instant {
+        const_expect!(
+            Instant::of_epoch_second_and_adjustment_checked(epoch_seconds, nano_adjustment),
+            "nano adjustment would overflow instant"
+        )
     }
 
-    fn of_epoch_second_and_adjustment_checked(
+    const fn of_epoch_second_and_adjustment_checked(
         seconds: i64,
         nano_adjustment: i64,
     ) -> Option<Instant> {
-        of_seconds_and_adjustment_checked(seconds, nano_adjustment).map(|(seconds, nanos)| {
-            Instant {
+        // TODO: switch back to map when constant is stable
+        match of_seconds_and_adjustment_checked(seconds, nano_adjustment) {
+            None => None,
+            Some((seconds, nanos)) => Some(Instant {
                 epoch_second: seconds,
                 nanosecond_of_second: nanos,
-            }
-        })
+            }),
+        }
     }
 
     /// Gets the number of seconds before or after the epoch.
