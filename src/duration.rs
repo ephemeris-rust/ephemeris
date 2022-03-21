@@ -4,6 +4,7 @@ use std::u32;
 
 use crate::constants::*;
 use crate::seconds_nanos::*;
+use crate::util::const_expect;
 
 #[cfg(test)]
 pub mod factories;
@@ -42,13 +43,19 @@ impl Duration {
     ///
     /// # Panics
     /// - if the amount of days would overflow the duration.
-    pub fn of_days(days: i64) -> Duration {
-        Duration::of_days_checked(days).expect("days would overflow duration")
+    pub const fn of_days(days: i64) -> Duration {
+        const_expect!(
+            Duration::of_days_checked(days),
+            "days would overflow duration"
+        )
     }
 
-    fn of_days_checked(days: i64) -> Option<Duration> {
-        days.checked_mul(SECONDS_IN_DAY)
-            .map(|total_seconds| Duration::of_seconds(total_seconds))
+    const fn of_days_checked(days: i64) -> Option<Duration> {
+        // TODO: switch back to map when constant is stable
+        match days.checked_mul(SECONDS_IN_DAY) {
+            None => None,
+            Some(total_seconds) => Some(Duration::of_seconds(total_seconds)),
+        }
     }
 
     /// Obtains a `Duration` representing a number of standard hours.
@@ -61,14 +68,19 @@ impl Duration {
     ///
     /// # Panics
     /// - if the amount of hours would overflow the duration.
-    pub fn of_hours(hours: i64) -> Duration {
-        Duration::of_hours_checked(hours).expect("hours would overflow duration")
+    pub const fn of_hours(hours: i64) -> Duration {
+        const_expect!(
+            Duration::of_hours_checked(hours),
+            "hours would overflow duration"
+        )
     }
 
-    fn of_hours_checked(hours: i64) -> Option<Duration> {
-        hours
-            .checked_mul(SECONDS_IN_HOUR)
-            .map(|total_seconds| Duration::of_seconds(total_seconds))
+    const fn of_hours_checked(hours: i64) -> Option<Duration> {
+        // TODO: switch back to map when constant is stable
+        match hours.checked_mul(SECONDS_IN_HOUR) {
+            None => None,
+            Some(total_seconds) => Some(Duration::of_seconds(total_seconds)),
+        }
     }
 
     /// Obtains a `Duration` representing a number of standard minutes.
@@ -81,14 +93,19 @@ impl Duration {
     ///
     /// # Panics
     /// - if the amount of minutes would overflow the duration.
-    pub fn of_minutes(minutes: i64) -> Duration {
-        Duration::of_minutes_checked(minutes).expect("minutes would overflow duration")
+    pub const fn of_minutes(minutes: i64) -> Duration {
+        const_expect!(
+            Duration::of_minutes_checked(minutes),
+            "minutes would overflow duration"
+        )
     }
 
-    fn of_minutes_checked(minutes: i64) -> Option<Duration> {
-        minutes
-            .checked_mul(SECONDS_IN_MINUTE)
-            .map(|total_seconds| Duration::of_seconds(total_seconds))
+    const fn of_minutes_checked(minutes: i64) -> Option<Duration> {
+        // TODO: switch back to map when constant is stable
+        match minutes.checked_mul(SECONDS_IN_MINUTE) {
+            None => None,
+            Some(total_seconds) => Some(Duration::of_seconds(total_seconds)),
+        }
     }
 
     /// Obtains a Duration representing a number of seconds and an adjustment in nanoseconds.
@@ -99,18 +116,25 @@ impl Duration {
     ///
     /// # Panics
     /// - if the adjusted amount of seconds would overflow the duration.
-    pub fn of_seconds_and_adjustment(seconds: i64, nano_adjustment: i64) -> Duration {
-        Duration::of_seconds_and_adjustment_checked(seconds, nano_adjustment)
-            .expect("nano adjustment would overflow duration")
+    pub const fn of_seconds_and_adjustment(seconds: i64, nano_adjustment: i64) -> Duration {
+        const_expect!(
+            Duration::of_seconds_and_adjustment_checked(seconds, nano_adjustment),
+            "nano adjustment would overflow duration"
+        )
     }
 
-    fn of_seconds_and_adjustment_checked(seconds: i64, nano_adjustment: i64) -> Option<Duration> {
-        of_seconds_and_adjustment_checked(seconds, nano_adjustment).map(|(seconds, nanos)| {
-            Duration {
-                seconds: seconds,
+    const fn of_seconds_and_adjustment_checked(
+        seconds: i64,
+        nano_adjustment: i64,
+    ) -> Option<Duration> {
+        // TODO: switch back to map when constant is stable
+        match of_seconds_and_adjustment_checked(seconds, nano_adjustment) {
+            None => None,
+            Some((seconds, nanos)) => Some(Duration {
+                seconds,
                 nanoseconds_of_second: nanos,
-            }
-        })
+            }),
+        }
     }
 
     /// Obtains a Duration representing a number of seconds.
@@ -121,7 +145,7 @@ impl Duration {
     ///  - `seconds`: the seconds in the duration.
     pub const fn of_seconds(seconds: i64) -> Duration {
         Duration {
-            seconds: seconds,
+            seconds,
             nanoseconds_of_second: 0,
         }
     }
@@ -132,7 +156,7 @@ impl Duration {
     ///
     /// # Parameters
     ///  - `millis`: the milliseconds in the duration.
-    pub fn of_millis(millis: i64) -> Duration {
+    pub const fn of_millis(millis: i64) -> Duration {
         let seconds = millis / MILLISECONDS_IN_SECOND;
         let adjustment = (millis % MILLISECONDS_IN_SECOND) * NANOSECONDS_IN_MILLISECOND;
 
@@ -150,10 +174,10 @@ impl Duration {
     ///
     /// # Parameters
     ///  - `nanos`: the nanos in the duration.
-    pub fn of_nanos(nanoseconds: i64) -> Duration {
+    pub const fn of_nanos(nanoseconds: i64) -> Duration {
         let (seconds, nanos) = seconds_and_nanos(nanoseconds);
         Duration {
-            seconds: seconds,
+            seconds,
             nanoseconds_of_second: nanos,
         }
     }
