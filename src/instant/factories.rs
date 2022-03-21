@@ -9,7 +9,7 @@ use crate::Instant;
 use crate::assert::expect_panic;
 
 const INSTANT_SAFE_UPPER_BOUND: i64 =
-    Instant::MAX.epoch_second() - i64::MAX / NANOSECONDS_IN_SECOND + 0;
+    Instant::MAX.epoch_second() - i64::MAX / NANOSECONDS_IN_SECOND;
 const INSTANT_SAFE_LOWER_BOUND: i64 =
     Instant::MIN.epoch_second() - i64::MIN / NANOSECONDS_IN_SECOND + 1;
 
